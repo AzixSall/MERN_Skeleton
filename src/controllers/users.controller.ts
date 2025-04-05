@@ -15,7 +15,17 @@ const create = async(req: Request, res: Response) => {
     }
 }
 
-const list = (req : Request, res : Response) =>{};
+const list = async(req: Request, res :Response) =>{
+    try{
+        let users = await User.find().select('name email updated created');
+        res.status(200).json(users);
+    }
+    catch(e){
+        res.status(500).json({error : errorHandler.getErrorMessage(e)});
+    }
+}
+
+
 const userById = (req : Request, res : Response, next : NextFunction, id : string) =>{};
 const read = (req : Request, res : Response) =>{};
 const update = (req : Request, res : Response, next :  NextFunction) =>{};
