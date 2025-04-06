@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import crypto from "crypto";
+import { Document } from "mongoose";
 
 interface UserMethods {
     authenticate(plainText: string): boolean;
@@ -7,11 +8,12 @@ interface UserMethods {
     makeSalt(): string;
 }
 
-interface UserDocument extends mongoose.Document, UserMethods {
+export interface UserDocument extends Document, UserMethods {
     name: string;
     email: string;
-    salt: string;
     hashed_password: string;
+    salt: string;
+    _id: string;
     _password: string;
 }
 
@@ -35,42 +37,45 @@ const UserSchema = new mongoose.Schema<UserDocument>({
     salt : String
 }, {timestamps : true});
 
-UserSchema.virtual('password').set(function(password){
+UserSchema.virtual('password')
+  .set(function (this: UserDocument, password: string) {
     this._password = password;
     this.salt = this.makeSalt();
     this.hashed_password = this.encryptPassword(password);
-}).get(function(){
-    return this.hashed_password;
+  })
+  .get(function (this: UserDocument) {
+    return this._password;
 });
 
-UserSchema.methods = {
-    authenticate : function(plainText : string){
-        return this.encryptPassword(plainText) === this.hashed_password;
-    },
-    encryptPassword : function(password : string){
-        if(!password) return '';
-        try{
-            return crypto
-            .createHmac('sha', this.salt)
-            .update(Buffer.from(password))
-            .digest('hex')
-        }
-        catch(e){
-            return '';
-        }
-    },
-    makeSalt : function(){
-        return Math.round((new Date().valueOf() * Math.random())) + '';
+UserSchema.methods.authenticate = function (this: UserDocument, plainText: string): boolean {
+    return this.encryptPassword(plainText) === this.hashed_password;
+};
+  
+UserSchema.methods.encryptPassword = function (this: UserDocument, password: string): string {
+    if (!password) return '';
+    try {
+      return crypto
+        .createHmac('sha1', this.salt)
+        .update(password)
+        .digest('hex');
+    } catch (err) {
+      return '';
     }
-}
+};
+  
+UserSchema.methods.makeSalt = function (this: UserDocument): string {
+    return Math.round(new Date().valueOf() * Math.random()) + '';
+};
+  
 
-UserSchema.path('hashed_password').validate(function(v){
-    if(this._password && this._password.length < 6){
-        this.invalidate('password', 'Password must be at least 6 characters');
+UserSchema.path('hashed_password').validate(function (this: UserDocument) {
+    if (this.hashed_password && this.hashed_password.length < 6) {
+      this.invalidate('password', 'Password must be at least 6 characters');
     }
-    if(this.isNew && !this._password){
-        this.invalidate('password', 'Password must be defined');
+    if (this.isNew && !this.hashed_password) {
+      this.invalidate('password', 'Password must be defined');
     }
-}, undefined);
+});
+  
 
 export default mongoose.model('User', UserSchema);

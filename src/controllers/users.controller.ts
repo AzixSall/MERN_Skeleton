@@ -33,7 +33,7 @@ const userById = async(req : Request, res : Response, next : NextFunction, id : 
         if(!user){
             res.status(200).json({message : 'User unkown'});
         }
-        req.profile = user;
+        req.profile = user || undefined;
         next();
     }
     catch (e){
@@ -41,18 +41,28 @@ const userById = async(req : Request, res : Response, next : NextFunction, id : 
     }
 };
 const read = (req : Request, res : Response) =>{
-    req.profile.hashed_password = undefined;
-    req.profile.salt = undefined;
+    if(!req.profile){
+        res.status(200).json({message : 'User unkown'});
+        return;
+    }
+    req.profile.hashed_password = '';
+    req.profile.salt = '';
     res.json(req.profile);
 };
 const update = async(req : Request, res : Response, next :  NextFunction) =>{
     try {
         let user = req.profile;
         user = extend(user, req.body);
+
+        if(!user){
+            res.status(200).json({message : 'User unkown'});
+            return;
+        }
+
         await user.save();
         req.profile = user;
-        user.hashed_password = undefined;
-        user.salt = undefined;
+        user.hashed_password = '';
+        user.salt = '';
         res.json(user);
     } catch (error) {
         res.status(400).json({error : errorHandler.getErrorMessage(error)});
@@ -61,7 +71,13 @@ const update = async(req : Request, res : Response, next :  NextFunction) =>{
 const remove = async(req : Request, res : Response, next : NextFunction) =>{
     try {
         let user = req.profile;
-        let deletedUser = await user.remove();
+
+        if(!user){
+            res.status(200).json({message : 'User unkown'});
+            return;
+        }
+
+        let deletedUser = await user.deleteOne();
         deletedUser.hashed_password = undefined;
         deletedUser.salt = undefined;
         res.json(deletedUser);

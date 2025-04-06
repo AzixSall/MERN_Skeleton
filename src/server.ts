@@ -3,6 +3,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import userRoutes from './routes/user.routes';
+import authRoutes from './routes/auth.routes';
+import '../types/express';
 
 // Load env vars
 dotenv.config();
@@ -24,6 +26,7 @@ app.get('/api', (req, res) => {
   res.json({ message: 'API Running' });
 });
 app.use('/', userRoutes);
+app.use('/', authRoutes);
 
 // Start server
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
