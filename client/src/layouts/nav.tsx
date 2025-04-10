@@ -4,21 +4,21 @@ import '../custom.css';
 const Nav = () => {
     return (
         <nav className="navbar">
-            <div className="logo">
-                <Link to="/">YourLogo</Link>
+            <div className="navbar__logo">
+                <Link to="/"><img src='../assets/download.png' alt='logo'></img></Link>
             </div>
-            <ul className="nav-links">
+            <ul className="navbar__list">
                 <li>
-                    <Link to="/">Home</Link>
+                    <Link to="/" className='navbar__link'>Home</Link>
                 </li>
                 <li>
-                    <Link to="/about">About</Link>
+                    <Link to="/login" className='navbar__link'>Login</Link>
                 </li>
                 <li>
-                    <Link to="/services">Services</Link>
+                    <Link to="/signup" className='navbar__link'>Signup</Link>
                 </li>
                 <li>
-                    <Link to="/contact">Contact</Link>
+                    <Link to="/users" className='navbar__link'>Users</Link>
                 </li>
             </ul>
         </nav>
