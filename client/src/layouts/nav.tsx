@@ -4,8 +4,8 @@ import '../custom.css';
 const Nav = () => {
     return (
         <nav className="navbar">
-            <div className="navbar__logo">
-                <Link to="/"><img src='../assets/download.png' alt='logo'></img></Link>
+            <div>
+                <Link to="/"><img src='../../public/download.png' alt='logo' className='navbar__logo'></img></Link>
             </div>
             <ul className="navbar__list">
                 <li>

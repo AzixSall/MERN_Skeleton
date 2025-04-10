@@ -3,11 +3,11 @@ import SecondaryTitle from '../components/typography/secondaryTitle.js';
 import Paragraphe from '../components/typography/paragraph.js';
 import Card from '../components/ui/card.js';
 
-const cardDetails = {
-    title: 'Sample Card Title',
-    description: 'This is a description for the card.',
-    image: '../assets/download.png'
-};
+const allCardDetails = [
+    { title: 'Users Authentication', description: 'Signup / Login Your Users', image: '../../public/download.png' },
+    { title: 'User Management', description: 'Edit /Delete your Users', image: '../../public/download.png' },
+    { title: 'JWT Authentication', description: 'Secure authentication', image: '../../public/download.png' }
+];
 
 
 const Home = () => (
@@ -17,14 +17,12 @@ const Home = () => (
         <SecondaryTitle text="This app goal is to give a fondation for building your MERN application, it's done with Typescript, Vite and uses Sass for styling."></SecondaryTitle>
         <hr></hr>
         <Paragraphe text="This project displays the following properties"></Paragraphe>
-        <Card details={cardDetails} />
         <div className="row">
-            <div className="col-1-of-2">
-                <Card details={cardDetails} />
-            </div>
-            <div className="col-1-of-2">
-                <Card details={cardDetails} />
-            </div>
+            {allCardDetails.map((details, index) => (
+                <div key={index} className="col-1-of-3">
+                    <Card details={details} />
+                </div>
+            ))}
         </div>
 
     </div>
