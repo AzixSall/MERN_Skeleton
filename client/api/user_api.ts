@@ -1,6 +1,18 @@
-const signin = async (user) => {
+import { User } from "../src/types/user";
+
+interface UserParams {
+    userId: string;
+}
+
+interface Credentials {
+    t: string;
+}
+
+type UserListResponse = User[] | { error: string };
+
+const signin = async (user : User) => {
     try {
-        let response = await fetch('/auth/signin/', {
+        const response = await fetch('/auth/signin/', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -17,16 +29,16 @@ const signin = async (user) => {
 
 const signout = async () => {
     try {
-        let response = await fetch('/auth/signout/', { method: 'GET' });
+        const response = await fetch('/auth/signout/', { method: 'GET' });
         return await response.json();
     } catch (err) {
         console.log(err);
     }
 }
 
-const create = async (user) => {
+const create = async (user : User): Promise<User> => {
     try {
-        let response = await fetch('/api/users', {
+        const response = await fetch('/api/users', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -39,26 +51,27 @@ const create = async (user) => {
 
     } catch (e) {
         console.log(e);
+        throw e;
     }
 }
 
-const list = async (signal) => {
+const list = async (signal: AbortSignal): Promise<UserListResponse> => {
     try {
-        let response = await fetch('/api/users/', {
-            method: 'GET',
-            signal: signal,
-        });
-
-        return await response.json();
-
-    } catch (e) {
-        console.log(e);
+      const response = await fetch('/api/users/', {
+        method: 'GET',
+        signal: signal,
+      });
+      return await response.json();
+    } catch (e : unknown) {
+      console.log(e);
+      const errorMessage = e instanceof Error ? e.message : 'Unknown error';
+      return { error: errorMessage };
     }
 }
 
-const read = async (params, credentials, signal) => {
+const read = async (params : UserParams, credentials : Credentials, signal : AbortSignal) => {
     try {
-        let response = await fetch('/api/users/' + params.userId, {
+        const response = await fetch('/api/users/' + params.userId, {
             method: 'GET',
             signal: signal,
             headers: {
@@ -73,9 +86,9 @@ const read = async (params, credentials, signal) => {
     }
 }
 
-const update = async (params, credentials, user) => {
+const update = async (params : UserParams, credentials : Credentials) => {
     try {
-        let response = await fetch('api/users/' + params.userId, {
+        const response = await fetch('api/users/' + params.userId, {
             method: 'PUT',
             headers: {
                 'Accept': 'application/json',
@@ -92,9 +105,9 @@ const update = async (params, credentials, user) => {
     }
 }
 
-const remove = async (params, credentials) => {
+const remove = async (params : UserParams, credentials : Credentials) => {
     try {
-        let response = await fetch('/api/users/' + params.userId, {
+        const response = await fetch('/api/users/' + params.userId, {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',
